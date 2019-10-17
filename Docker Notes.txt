@@ -1,0 +1,139 @@
+
+## List Docker CLI commands
+docker
+docker container --help
+
+## Display Docker version and info
+docker --version
+docker version
+docker info
+
+## Execute Docker image
+docker run hello-world
+
+## List Docker images
+docker image ls
+
+## List Docker containers (running, all, all in quiet mode)
+docker container ls
+docker container ls --all
+docker container ls -aq	
+
+
+############ Docker Udemy Guide ######
+Intro
+	docker run hello-world 
+		Runs the hello-world container. Download's hello-world image from docker hub for first time and then runs the container of the image
+
+	docker run busybox
+	docker run busybox ls
+	docker run busybox echo hi
+		Sample docker image which lets us run the 'ls' and 'echo' commands on the fly. The 'ls' and 'echo' commands are included in the busy box image's filesystem
+
+	docker ps
+		Lists the container id and status of the currently running docker containers
+
+	docker ps --all
+		Lists all the containers run history in the machine
+
+Life Cycle of Docker Container
+	docker run hello-world
+		combination of below commands
+	docker create hello-world
+	docker start hello-world
+
+	'create' command create the container by prepping the filesystem in an image and the 'start' command issues the process specified to run. 'docker run' combines them both
+
+	docker start e538a9e09f2b
+		Runs the container 'e538a9e09f2b' again
+
+	docker start -a e538a9e09f2b
+		Runs the container 'e538a9e09f2b' and prints the output to stdout of console	
+
+	docker system prune
+		Deletes all the containers from the local machine and docker container data.	
+
+	docker system prune -a
+		Deletes all containers, images and volumes	
+
+
+	docker logs e538a9e09f2b
+		Outputs the log of the container
+
+	docker start 90a503ab8484
+	docker kill 90a503ab8484
+		Stops the container with id 90a503ab8484 running in back ground. Stop sends a SIGTERM and Kill sends a SIGKILL. The 'stop' command waits for 10 seconds and then kill it if it doesn't respond
+
+Multiple inputs to Docker Container
+
+	docker run redis-server
+		start the redis container. We need the 'redis-cli' to interact with redis-server. Below command helps with that
+
+	docker exec -it 'containeridofredisserver' redis-cli
+		The 'exec -it' attaches the terminal to redis-cli 'STDIN'. 'i' attaches the input to "STDIN" and 't' formats the STDIN
+
+	docker exec -it 'containeridofredisserver' sh (docker run -it imagename)
+		Attaches the terminal to the shell 'sh' of the container. We can then run the shell commands in it
+
+
+Building Custom Docker Image
+	#create base image
+		FROM alpine
+	#Download some dependencies
+		RUN apk add --update redis
+	#Run some commands after the container start
+		CMD ["redis-server"]
+
+	docker build -t balajivijayan/redis-custom-server:latest .
+		Tag the newly created image with a name
+
+Making a Real Project With Docker
+	*****
+	Check the sample dockerfile in 'simplewebpage' directory
+	
+	FROM node:alpine  --Pulls the sample node base image. alpine means minimum config image in docker world
+
+	WORKDIR /usr/app  --Makes current directory to /usr/app
+
+	COPY ./package.json ./ --Copies files from current build context
+
+	RUN npm install
+
+	COPY ./ ./
+
+	CMD ["npm", "start"]
+
+	******
+
+	docker run -p 8080:8080 'container-name' .
+		This maps the node application's 8080 port to the container's 8080 port.
+
+
+Docker Volumes and Bookmark
+
+npm install -g create-react-app
+create-react-app frontend
+
+docker build -t balajivijayan/frontend .
+docker run -p 3000:3000 .
+
+docker build -t balajivijayan/frontend -f Dockerfile.dev .
+	Builds the frontend app using 'Dockerfile.dev' custom docker file
+
+docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app balajivijayan/frontend
+	$(pwd) This creates the local file system referece on the docker container's file system
+	-v/app/node_modules - This is a bookmark since the node_modules folder is not available in the filesystem
+
+
+NODE:
+npm run start
+npm run test
+npm run build
+
+Docker Multi-step Builds
+	Refer Dockerfile in visits folder
+
+
+brew cask install miniku
+
+minikube start
